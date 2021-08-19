@@ -25,6 +25,9 @@ The following **additional** features are implemented:
 - [x] Create a tip slider that adjusts the tip percentage
 - [x] Make a tip splitting feature
 
+## GIF
+<img src='https://github.com/Rebecca-CYLi/Swift-Tip-Calculator/blob/main/Tip%20Calculator.gif' title='Tip Calculator GIF' />
+
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
