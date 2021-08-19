@@ -26,8 +26,8 @@ The following **additional** features are implemented:
 - [x] Make a tip splitting feature
 
 ## GIF
-<img src='https://github.com/Rebecca-CYLi/Swift-Tip-Calculator/blob/main/Tip%20Calculator.gif' title='Tip Calculator GIF' />
-
+<!-- <img src='https://github.com/Rebecca-CYLi/Swift-Tip-Calculator/blob/main/Tip%20Calculator.gif' title='Tip Calculator GIF' /> -->
+![](Tip Calculator.gif)
 ## Notes
 
 Describe any challenges encountered while building the app.
