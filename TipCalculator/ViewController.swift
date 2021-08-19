@@ -7,9 +7,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITextFieldDelegate {
-   
-    
+class ViewController: UIViewController {
     //Bill Amount Text Field
     @IBOutlet weak var billAmountTextField: UITextField!
     //Tip Amount Label $0.00
@@ -23,12 +21,10 @@ class ViewController: UIViewController, UITextFieldDelegate {
     //display Bill Split Between Number of People
     @IBOutlet weak var billSplitLabel: UILabel!
     
-    
     //Extra Feature: Tip Slider
     @IBOutlet weak var tipSlider: UISlider!
     //Tip slider Number
     @IBOutlet weak var tipSliderLabel: UILabel!
-    
     
     //-------------- Sliding Bar Version -------------------------------------------
     //(Optional) Number of People Field
@@ -42,22 +38,70 @@ class ViewController: UIViewController, UITextFieldDelegate {
     //Splitting the Bill+Tips evenly btw parties
     @IBOutlet weak var billSplitParty: UILabel!
     
+    // to store the current active textfield
+    var activeTextField : UITextField? = nil
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         self.title = "Tip Calculator"
         billAmountTextField.delegate = self
         billAmountTextField.becomeFirstResponder()
+        numOfPeople.delegate = self
+        slidingNumPeople.delegate = self
+        slidingBillAmount.delegate = self
+        
         
         //Looks for single or multiple taps
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
+        //calls function to close keyboard
         view.addGestureRecognizer(tap)
+        
+        // call the 'keyboardWillShow' function when the view controller receive notification that keyboard is going to be shown
+        NotificationCenter.default.addObserver(self, selector: #selector(ViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        // call the 'keyboardWillHide' function when the view controlelr receive notification that keyboard is going to be hidden
+        NotificationCenter.default.addObserver(self, selector: #selector(ViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     //Calls this function when the tap is recognized.
     @objc func dismissKeyboard() {
         //Causes the view (or one of its embedded text fields) to resign the first responder status.
         view.endEditing(true)
     }
+    @objc func keyboardWillShow(notification: NSNotification) {
+        
+        guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
+            
+            // if keyboard size is not available for some reason, dont do anything
+           return
+        }
+        
+        var shouldMoveViewUp = false
+        
+        // if active text field is not nil
+        if let activeTextField = activeTextField {
+            
+            let bottomOfTextField = activeTextField.convert(activeTextField.bounds, to: self.view).maxY;
+            let topOfKeyboard = self.view.frame.height - keyboardSize.height
+            
+            if bottomOfTextField > topOfKeyboard {
+                shouldMoveViewUp = true
+            }
+        }
+        
+        if(shouldMoveViewUp) {
+            self.view.frame.origin.y = 0 - keyboardSize.height
+        }
+    }
+    @objc func keyboardWillHide(notification: NSNotification) {
+      // move back the root view origin to zero
+      self.view.frame.origin.y = 0
+    }
+    @objc func backgroundTap(_ sender: UITapGestureRecognizer) {
+        // go through all of the textfield inside the view, and end editing thus resigning first responder
+        // ie. it will trigger a keyboardWillHide notification
+        self.view.endEditing(true)
+    }
+    
     
     //Segment Tip Bar - Calculating Tip
     @IBAction func calculateTip(_ sender: Any) {
@@ -99,12 +143,16 @@ class ViewController: UIViewController, UITextFieldDelegate {
         slidingJustTips.text = String(format: "$%.2f", tip)
         billNTips.text = String(format: "$%.2f", newBillamount)
         billSplitParty.text = String(format: "$%.2f", newBillamount / numPeople)
-        
     }
-    
-    
-    
-    
-
 }
 
+extension ViewController : UITextFieldDelegate {
+  // when user select a textfield, this method will be called
+  func textFieldDidBeginEditing(_ textField: UITextField) {
+    // set the activeTextField to the selected textfield
+    self.activeTextField = textField
+  }
+  func textFieldDidEndEditing(_ textField: UITextField) {
+    self.activeTextField = nil
+  }
+}
