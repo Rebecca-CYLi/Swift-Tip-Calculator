@@ -7,7 +7,8 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UITextFieldDelegate {
+   
     
     //Bill Amount Text Field
     @IBOutlet weak var billAmountTextField: UITextField!
@@ -44,7 +45,20 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        self.title = "Tip Calculator"
+        billAmountTextField.delegate = self
+        billAmountTextField.becomeFirstResponder()
+        
+        //Looks for single or multiple taps
+        let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
+        view.addGestureRecognizer(tap)
     }
+    //Calls this function when the tap is recognized.
+    @objc func dismissKeyboard() {
+        //Causes the view (or one of its embedded text fields) to resign the first responder status.
+        view.endEditing(true)
+    }
+    
     //Segment Tip Bar - Calculating Tip
     @IBAction func calculateTip(_ sender: Any) {
         
